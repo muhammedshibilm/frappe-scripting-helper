@@ -1,0 +1,77 @@
+{
+  "name": "frappe-scripting-helper",
+  "displayName": "Frappe Scripting Helper",
+  "description": "Auto-completion, snippets, and IntelliSense for Frappe client & server scripting",
+  "version": "0.0.1",
+  "publisher": "Muhammed Shibil M",
+  "engines": {
+    "vscode": "^1.104.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "keywords": [
+    "frappe",
+    "erpnext",
+    "javascript",
+    "typescript",
+    "snippets",
+    "intellisense"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/muhammedshibilm/frappe-scripting-helper"
+  },
+  "license": "MIT",
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:typescript"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "frappe-scripting-helper.helloWorld",
+        "title": "Hello World"
+      }
+    ],
+    "languages": [
+      {
+        "id": "javascript",
+        "extensions": [
+          ".js"
+        ]
+      }
+    ],
+    "snippets": [
+      {
+        "language": "javascript",
+        "path": "./snippets/frappe-snippets.code-snippets"
+      },
+      {
+        "language": "typescript",
+        "path": "./snippets/frappe-snippets.code-snippets"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.104.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "eslint": "^9.34.0",
+    "typescript": "^5.9.2",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "Frappe Form Script": {
+    "prefix": "frappeform",
+    "body": [
+      "frappe.ui.form.on('${1:DocType}', {",
+      "\t${2:refresh}: function(frm) {",
+      "\t\t$0",
+      "\t}",
+      "});"
+    ],
+    "description": "Boilerplate for frappe.ui.form.on"
+  },
+  "Frappe Call": {
+    "prefix": "frappecall",
+    "body": [
+      "frappe.call({",
+      "\tmethod: '${1:method_name}',",
+      "\tcallback: function(r) {",
+      "\t\tif (r.message) {",
+      "\t\t\t$0",
+      "\t\t}",
+      "\t}",
+      "});"
+    ],
+    "description": "Frappe server call template"
+  },
+  "Form Call": {
+    "prefix": "frmcall",
+    "body": [
+      "frm.call({",
+      "\tmethod: '${1:method_name}',",
+      "\tcallback: function(r) {",
+      "\t\tif (r.message) {",
+      "\t\t\t$0",
+      "\t\t}",
+      "\t}",
+      "});"
+    ],
+    "description": "Form server call template"
+  }
+}
