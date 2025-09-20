@@ -1,41 +1,46 @@
 {
   "Frappe Form Script": {
     "prefix": "frappeform",
+    "scope": "javascript,typescript",
     "body": [
       "frappe.ui.form.on('${1:DocType}', {",
-      "\t${2:refresh}: function(frm) {",
+      "\t${2|setup,onload,refresh,validate,before_save,after_save,before_submit,on_submit,after_cancel|}(frm) {",
       "\t\t$0",
-      "\t}",
+      "\t},",
       "});"
     ],
-    "description": "Boilerplate for frappe.ui.form.on"
+    "description": "Boilerplate for frappe.ui.form.on with common events"
   },
   "Frappe Call": {
     "prefix": "frappecall",
+    "scope": "javascript,typescript",
     "body": [
       "frappe.call({",
-      "\tmethod: '${1:method_name}',",
-      "\tcallback: function(r) {",
+      "\tmethod: '${1:app.module.method_name}',",
+      "\targs: { ${2} },",
+      "\tcallback: (r) => {",
       "\t\tif (r.message) {",
       "\t\t\t$0",
       "\t\t}",
-      "\t}",
+      "\t},",
       "});"
     ],
-    "description": "Frappe server call template"
+    "description": "Frappe server call snippet with ES6 arrow callback"
   },
   "Form Call": {
     "prefix": "frmcall",
+    "scope": "javascript,typescript",
     "body": [
       "frm.call({",
-      "\tmethod: '${1:method_name}',",
-      "\tcallback: function(r) {",
+      "\tmethod: '${1:app.module.method_name}',",
+      "\targs: { ${2} },",
+      "\tcallback: (r) => {",
       "\t\tif (r.message) {",
       "\t\t\t$0",
       "\t\t}",
-      "\t}",
+      "\t},",
       "});"
     ],
-    "description": "Form server call template"
+    "description": "In-form server call snippet with ES6 arrow callback"
   }
 }

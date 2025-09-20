@@ -2,8 +2,8 @@
   "name": "frappe-scripting-helper",
   "displayName": "Frappe Scripting Helper",
   "description": "Auto-completion, snippets, and IntelliSense for Frappe client & server scripting",
-  "version": "0.0.1",
-  "publisher": "Muhammed Shibil M",
+  "version": "0.0.2",
+  "publisher": "muhammedshibilm",
   "engines": {
     "vscode": "^1.104.0"
   },
