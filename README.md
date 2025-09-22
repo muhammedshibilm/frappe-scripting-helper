@@ -101,7 +101,6 @@ Hover over any event or method to view its definition and usage examples directl
 Contributions and suggestions are very welcome! Feel free to:
 
 - Add new `frm.` methods (e.g., `frm.set_value`, `frm.toggle_enable`, etc.)  
-- Provide server-side Python hook snippets (`@frappe.whitelist`, etc.)  
 - Improve documentation, tests, and examples  
 
 Please submit pull requests against the `main` branch.

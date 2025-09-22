@@ -5,7 +5,7 @@ Auto-completion, snippets, and IntelliSense for **Frappe Framework** client & se
 ## Details
 
 - **Publisher**: Muhammed Shibil M  
-- **Version**: 0.0.2  
+- **Version**: 1.0.0  
 - **VS Code Engine**: ^1.104.0  
 - **Repository**: https://github.com/muhammedshibilm/frappe-scripting-helper  
 - **License**: MIT  

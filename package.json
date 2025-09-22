@@ -1,8 +1,8 @@
 {
   "name": "frappe-scripting-helper",
   "displayName": "Frappe Scripting Helper",
-  "description": "Auto-completion, snippets, and IntelliSense for Frappe client & server scripting",
-  "version": "0.1.0",
+  "description": "Auto-completion, snippets, and IntelliSense for Frappe Framework v15 client-side scripting",
+  "version": "1.0.0",
   "publisher": "muhammedshibilm",
   "engines": {
     "vscode": "^1.104.0"
@@ -17,12 +17,19 @@
     "javascript",
     "typescript",
     "snippets",
-    "intellisense"
+    "intellisense",
+    "autocomplete",
+    "v15",
+    "client-side"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/muhammedshibilm/frappe-scripting-helper"
   },
+  "bugs": {
+    "url": "https://github.com/muhammedshibilm/frappe-scripting-helper/issues"
+  },
+  "homepage": "https://github.com/muhammedshibilm/frappe-scripting-helper#readme",
   "license": "MIT",
   "activationEvents": [
     "onLanguage:javascript",
@@ -31,18 +38,21 @@
   "main": "./out/extension.js",
   "icon": "images/icon.png",
   "contributes": {
+    "configuration": {
+      "title": "Frappe Scripting Helper",
+      "properties": {
+        "frappeScriptingHelper.showWelcomeMessage": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show welcome message when extension is activated"
+        }
+      }
+    },
     "commands": [
       {
-        "command": "frappe-scripting-helper.helloWorld",
-        "title": "Hello World"
-      }
-    ],
-    "languages": [
-      {
-        "id": "javascript",
-        "extensions": [
-          ".js"
-        ]
+        "command": "frappe-scripting-helper.showDocumentation",
+        "title": "Open Frappe v15 Documentation",
+        "category": "Frappe Scripting Helper"
       }
     ],
     "snippets": [

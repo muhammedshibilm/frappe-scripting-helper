@@ -1,18 +1,45 @@
 import * as vscode from 'vscode';
 
+function createFrappeDocumentation(detail: string) {
+  return new vscode.MarkdownString(
+    `${detail}\n\n[Frappe v15 Documentation](https://frappeframework.com/docs/v15/user/en/api)`
+  );
+}
+
+
+
 export function activate(context: vscode.ExtensionContext) {
   console.log('Frappe Scripting Helper is now active!');
 
 
+  const showWelcomeMessage = vscode.workspace
+    .getConfiguration('frappeScriptingHelper')
+    .get('showWelcomeMessage', true);
+  if (showWelcomeMessage) {
+    vscode.window.showInformationMessage('Frappe Scripting Helper is now active!');
+  }
+
+  const openDocsCommand = vscode.commands.registerCommand(
+    'frappe-scripting-helper.showDocumentation',
+    () => {
+      vscode.env.openExternal(
+        vscode.Uri.parse('https://frappeframework.com/docs/v15/user/en/api')
+      );
+    }
+  );
+
+
   const formEventsProvider = vscode.languages.registerCompletionItemProvider(
-    { language: 'javascript', scheme: 'file' },
+    [{ language: 'javascript', scheme: 'file' }, { language: 'typescript', scheme: 'file' }],
     {
       provideCompletionItems(document, position) {
 
 
         const textBefore = document.getText(new vscode.Range(new vscode.Position(0, 0), position));
 
-
+        if (!textBefore.includes("frappe.ui.form.on")) {
+          return undefined;
+        }
 
         const formEvents = [
           { label: 'setup', detail: 'Triggered once when the form is created for the first time' },
@@ -30,11 +57,26 @@ export function activate(context: vscode.ExtensionContext) {
           { label: 'before_discard', detail: 'Triggered before discard is called' },
           { label: 'after_discard', detail: 'Triggered after form is discarded' },
           { label: 'timeline_refresh', detail: 'Triggered after form timeline is rendered' },
+          { label: 'before_print', detail: 'Triggered before printing the document' },
+          { label: 'after_print', detail: 'Triggered after printing the document' },
+
 
 
           { label: 'company', detail: 'Triggered when company field is changed' },
           { label: 'customer', detail: 'Triggered when customer field is changed' },
           { label: 'item_code', detail: 'Triggered when item_code field is changed' },
+          { label: 'supplier', detail: 'Triggered when supplier field is changed' },
+          { label: 'qty', detail: 'Triggered when quantity field is changed' },
+          { label: 'rate', detail: 'Triggered when rate field is changed' },
+          { label: 'amount', detail: 'Triggered when amount field is changed' },
+          { label: 'status', detail: 'Triggered when status field is changed' },
+          { label: 'date', detail: 'Triggered when date field is changed' },
+          { label: 'posting_date', detail: 'Triggered when posting_date field is changed' },
+          { label: 'due_date', detail: 'Triggered when due_date field is changed' },
+          { label: 'project', detail: 'Triggered when project field is changed' },
+          { label: 'warehouse', detail: 'Triggered when warehouse field is changed' },
+          { label: 'currency', detail: 'Triggered when currency field is changed' },
+
 
 
           { label: 'items_add', detail: 'Triggered when a row is added to items child table' },
@@ -43,6 +85,16 @@ export function activate(context: vscode.ExtensionContext) {
           { label: 'items_remove', detail: 'Triggered when a row is removed from items child table' },
           { label: 'items_on_form_rendered', detail: 'Triggered when a row is opened as a form in items table' },
 
+          { label: 'get_email_recipient_filters', detail: 'Called by email dialog to fetch default filters for recipients' },
+          { label: 'get_email_recipients', detail: 'Called by email dialog to fetch default recipients' },
+
+          { label: 'before_navigate', detail: 'Triggered before navigating away from form' },
+          { label: 'after_workflow_action', detail: 'Triggered after a workflow action is performed' },
+          { label: 'before_print_preview', detail: 'Triggered before print preview is shown' },
+
+          { label: 'grid_row_click', detail: 'Triggered when a grid row is clicked (v15+)' },
+          { label: 'grid_refresh', detail: 'Triggered when grid is refreshed (v15+)' },
+          { label: 'before_grid_row_remove', detail: 'Triggered before a grid row is removed (v15+)' }
         ];
 
 
@@ -51,7 +103,7 @@ export function activate(context: vscode.ExtensionContext) {
           const item = new vscode.CompletionItem(ev.label, vscode.CompletionItemKind.Function);
           item.detail = ev.detail;
           item.insertText = new vscode.SnippetString(`${ev.label}(frm){\n\t$0\n},`);
-          item.documentation = new vscode.MarkdownString(ev.detail);
+          item.documentation = createFrappeDocumentation(ev.detail);
           item.sortText = '000_' + ev.label;
           item.preselect = true;
           item.filterText = ev.label;
@@ -59,6 +111,7 @@ export function activate(context: vscode.ExtensionContext) {
         });
       }
     },
+    '.', ',', '{', '(', '\'', '"', '`'
 
   );
 
@@ -86,6 +139,8 @@ export function activate(context: vscode.ExtensionContext) {
           { label: 'datetime', kind: vscode.CompletionItemKind.Property, detail: 'DateTime utilities', insertText: 'datetime' },
           { label: 'quick_entry', kind: vscode.CompletionItemKind.Property, detail: 'Current Quick Entry object', insertText: 'quick_entry' },
           { label: 'route_options', kind: vscode.CompletionItemKind.Property, detail: 'Route options for navigation', insertText: 'route_options' },
+          { label: 'local', kind: vscode.CompletionItemKind.Property, detail: 'Local variables and settings', insertText: 'local' },
+
 
 
           {
@@ -178,6 +233,7 @@ export function activate(context: vscode.ExtensionContext) {
             label: 'format_date', kind: vscode.CompletionItemKind.Method, detail: 'Format date',
             insertText: 'format_date("${1:date}")'
           },
+          { label: 'format', kind: vscode.CompletionItemKind.Method, detail: 'Format value based on fieldtype', insertText: 'format(${1:value}, {fieldtype: "${2:Data}"})' },
           {
             label: 'run_serially', kind: vscode.CompletionItemKind.Method, detail: 'Run tasks serially',
             insertText: 'run_serially([\n\t$0\n])'
@@ -197,13 +253,32 @@ export function activate(context: vscode.ExtensionContext) {
           { label: 'views', kind: vscode.CompletionItemKind.Property, detail: 'View registry', insertText: 'views' },
           { label: 'desk', kind: vscode.CompletionItemKind.Property, detail: 'Desk utilities', insertText: 'desk' },
           { label: 'workspace', kind: vscode.CompletionItemKind.Property, detail: 'Workspace methods', insertText: 'workspace' },
+
+          { label: 'provide', kind: vscode.CompletionItemKind.Method, detail: 'Create namespace', insertText: 'provide("${1:namespace}")' },
+          { label: 'require', kind: vscode.CompletionItemKind.Method, detail: 'Load JS/CSS asset asynchronously', insertText: 'require("${1:asset_path}", function() {\n\t$0\n})' },
+
+          {
+            label: 'ui_alert', kind: vscode.CompletionItemKind.Method,
+            detail: 'Show alert dialog (v15+)',
+            insertText: 'ui_alert("${1:message}", "${2:title}")'
+          },
+          {
+            label: 'get_open_grid_form', kind: vscode.CompletionItemKind.Method,
+            detail: 'Get open grid form (v15+)',
+            insertText: 'get_open_grid_form()'
+          },
+          {
+            label: 'is_grid_form', kind: vscode.CompletionItemKind.Method,
+            detail: 'Check if current form is a grid form (v15+)',
+            insertText: 'is_grid_form()'
+          }
         ];
 
         return frappeMainApi.map(api => {
           const item = new vscode.CompletionItem(api.label, api.kind);
           item.detail = api.detail;
           item.insertText = new vscode.SnippetString(api.insertText);
-          item.documentation = new vscode.MarkdownString(api.detail);
+          item.documentation = createFrappeDocumentation(api.detail);
           item.sortText = '000_' + api.label;
           item.preselect = true;
           item.filterText = api.label;
@@ -238,7 +313,7 @@ export function activate(context: vscode.ExtensionContext) {
           const item = new vscode.CompletionItem(prop.label, vscode.CompletionItemKind.Property);
           item.detail = prop.detail;
           item.insertText = prop.insertText;
-          item.documentation = new vscode.MarkdownString(prop.detail);
+          item.documentation = createFrappeDocumentation(prop.detail);
           item.sortText = '000_' + prop.label;
           item.preselect = true;
           item.filterText = prop.label;
@@ -293,13 +368,21 @@ export function activate(context: vscode.ExtensionContext) {
             label: 'count', detail: 'Count documents',
             insertText: 'count("${1:doctype}", {${2:args}})'
           },
+          {
+            label: 'update', detail: 'Update document field',
+            insertText: 'update("${1:doctype}", "${2:name}", {${3:field}: "${4:value}"})'
+          },
+          {
+            label: 'get_doclist', detail: 'Get child table records',
+            insertText: 'get_doclist("${1:doctype}", "${2:name}", "${3:child_table_field}")'
+          }
         ];
 
         return dbMethods.map(method => {
           const item = new vscode.CompletionItem(method.label, vscode.CompletionItemKind.Method);
           item.detail = method.detail;
           item.insertText = new vscode.SnippetString(method.insertText);
-          item.documentation = new vscode.MarkdownString(method.detail);
+          item.documentation = createFrappeDocumentation(method.detail);
           item.sortText = '000_' + method.label;
           item.preselect = true;
           item.filterText = method.label;
@@ -328,13 +411,17 @@ export function activate(context: vscode.ExtensionContext) {
           { label: 'make_app', detail: 'Make app method', insertText: 'make_app' },
           { label: 'Page', detail: 'Page class', insertText: 'Page' },
           { label: 'Field', detail: 'Field class', insertText: 'Field' },
+          { label: 'MultiSelectDialog', detail: 'Multi-select dialog', insertText: 'form.MultiSelectDialog' },
+          { label: 'Toast', detail: 'Show toast notifications', insertText: 'Toast' },
+          { label: 'Tooltip', detail: 'Tooltip utilities', insertText: 'Tooltip' },
+          { label: 'Notification', detail: 'Notification methods', insertText: 'Notification' },
         ];
 
         return uiProperties.map(prop => {
           const item = new vscode.CompletionItem(prop.label, vscode.CompletionItemKind.Property);
           item.detail = prop.detail;
           item.insertText = prop.insertText;
-          item.documentation = new vscode.MarkdownString(prop.detail);
+          item.documentation = createFrappeDocumentation(prop.detail);
           item.sortText = '000_' + prop.label;
           item.preselect = true;
           item.filterText = prop.label;
@@ -483,13 +570,26 @@ export function activate(context: vscode.ExtensionContext) {
             label: 'set_title', kind: vscode.CompletionItemKind.Method, detail: 'Set page title',
             insertText: 'set_title("${1:title}")'
           },
+
+          { label: 'add_fetch', kind: vscode.CompletionItemKind.Method, detail: 'Add fetch for linked fields', insertText: 'add_fetch("${1:link_field}", "${2:source_field}", "${3:target_field}")' },
+
+          {
+            label: 'get_selected', kind: vscode.CompletionItemKind.Method,
+            detail: 'Get selected child table rows',
+            insertText: 'get_selected("${1:child_fieldname}")'
+          },
+          {
+            label: 'set_currency_label', kind: vscode.CompletionItemKind.Method,
+            detail: 'Set currency label for amount fields',
+            insertText: 'set_currency_label("${1:fieldname}", "${2:currency}")'
+          }
         ];
 
         return frmMethods.map(method => {
           const item = new vscode.CompletionItem(method.label, method.kind);
           item.detail = method.detail;
           item.insertText = new vscode.SnippetString(method.insertText);
-          item.documentation = new vscode.MarkdownString(method.detail);
+          item.documentation = createFrappeDocumentation(method.detail);
           item.sortText = '000_' + method.label;
           item.preselect = true;
           item.filterText = method.label;
@@ -513,12 +613,20 @@ export function activate(context: vscode.ExtensionContext) {
           { label: 'cur_dialog', detail: 'Current open dialog' },
           { label: 'cur_page', detail: 'Current page object' },
           { label: 'locals', detail: 'All loaded documents and DocTypes' },
+          { label: '__', detail: 'Translation function' },
+          { label: 'moment', detail: 'Moment.js library for date manipulation' },
+          { label: 'cint', detail: 'Convert to integer' },
+          { label: 'cstr', detail: 'Convert to string' },
+          { label: 'flt', detail: 'Convert to float' },
+          { label: 'frappe.utils', detail: 'Frappe utility functions' },
+          { label: 'frappe.model', detail: 'Frappe model utilities' },
+          { label: 'frappe.realtime', detail: 'Real-time communication' }
         ];
 
         return items.map(g => {
           const item = new vscode.CompletionItem(g.label, vscode.CompletionItemKind.Variable);
           item.detail = g.detail;
-          item.documentation = new vscode.MarkdownString(g.detail);
+          item.documentation = createFrappeDocumentation(g.detail);
           item.sortText = '000_' + g.label;
           item.preselect = true;
           item.filterText = g.label;
@@ -530,6 +638,28 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
 
+  const frappeUiFormOnProvider = vscode.languages.registerCompletionItemProvider(
+    [{ language: 'javascript', scheme: 'file' }, { language: 'typescript', scheme: 'file' }],
+    {
+      provideCompletionItems(document, position) {
+        const linePrefix = document.lineAt(position).text.substr(0, position.character);
+        if (linePrefix.trim().endsWith('frappe.ui.form.')) {
+          const onItem = new vscode.CompletionItem('on', vscode.CompletionItemKind.Method);
+          onItem.detail = 'Attach a handler for a DocType';
+          onItem.insertText = new vscode.SnippetString("on('${1:Doctype}', {\n\trefresh(frm) {\n\t\t$0\n\t}\n});");
+          onItem.documentation = createFrappeDocumentation('Attach events to a Frappe DocType form.');
+          onItem.sortText = '000_on';
+          onItem.preselect = true;
+          return [onItem];
+        }
+        return [];
+      }
+    },
+    '.'
+  );
+
+
+
   context.subscriptions.push(
     formEventsProvider,
     frappeApiProvider,
@@ -537,7 +667,9 @@ export function activate(context: vscode.ExtensionContext) {
     frappeDbProvider,
     frappeUiProvider,
     frmProvider,
-    globalsProvider
+    globalsProvider,
+    openDocsCommand,
+    frappeUiFormOnProvider
   );
 }
 
